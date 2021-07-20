@@ -1,0 +1,214 @@
+import { Appear, Notes, themes } from "mdx-deck";
+
+export const theme = {
+  ...themes.highlight,
+  colors: {
+    text: "#fffffff0",
+    background: "#0073aa",
+    darkgray: "#191e23",
+  },
+  fonts: {
+    heading: '"IBM Plex Serif", serif, "Apple Color Emoji"',
+    body: '"IBM Plex Sans", sans-serif, "Apple Color Emoji"',
+    monospace: '"IBM Plex Mono", monospace',
+  },
+  styles: {
+    code: {
+      color: "background",
+    },
+    pre: {
+      bg: "text",
+      color: "background",
+    },
+    a: {
+      color: "text",
+    },
+  },
+};
+
+---
+
+# WordPress - Writing a Plugin
+
+---
+
+## Should I write a plugin?
+
+---
+
+### Should I write a plugin?
+
+<div>
+
+Never modify:
+
+- WordPress core files (`wp-includes/`)
+- your parent theme (`wp-content/themes/`)
+- another plugin (`wp-content/plugins/`)
+
+</div>
+
+<Notes>
+
+Should I write a plugin as opposed to modifying another file.
+
+Basically, the only other maintainable option is extending the child theme.
+
+- there's no hard rule to this
+- generally, don't touch files that aren't managed by us
+- (see list of things not to modify)
+  - no reason to modify core files
+  - parent theme can generally be replaced by copying a template into a child theme
+  - Changing a poorly-written plugin is most difficult.
+    - If it's a good plugin, it should use hooks (we'll talk about later)
+    - If it's bad, consider cloning it to a new plugin
+
+</Notes>
+
+---
+
+### Should this feature go in the child theme?
+
+<div>
+
+Rule of thumb:
+
+- Theme-specific? 🙅‍♂️ Add to child theme instead
+- Specific one-time override? 🤷‍♂️ Use best judgment
+- Overly-complicated site? 🤷‍♂️ Use best judgment
+- Otherwise, a plugin would probably work well
+
+</div>
+
+Note: most style changes can go in your child theme
+
+<Notes>
+
+As mentioned before, the only other maintainable option is extending the child theme.
+
+Again, there's no hard rule.
+
+(see guidelines from slide)
+
+On real-world sites, it often makes sense to put non-theme overrides in the child theme. Realistically, these changes may only live as long as the chosen theme.
+
+I lean to using the child theme for a lot. Really, it depends more on how the site is setup and how easy it is to write a plugin vs. extend the child theme.
+
+Worried about losing logic when changing themes? When migrating to a new theme, your child theme is essentially a record of everything that changed.
+
+</Notes>
+
+---
+
+## What is a plugin?
+
+---
+
+### What is a plugin?
+
+- a folder in the `wp-content/plugins` directory
+- a file in that directory with [certain comments](https://developer.wordpress.org/plugins/plugin-basics/header-requirements/) at the top
+- _traditionally_, entry file is named same as parent directory
+  - e.g. `plugins/hello-world/hello-world.php`
+
+<Notes>
+
+Technically a single file in `wp-content/plugins` also works, but it's good to use a folder in case you need to add additional logic.
+
+Minimal plugin: `example-plugins/1-hello-world/hello-world.php` [[example-plugins/1-hello-world/hello-world.php]]
+
+[Here's header requirements](https://developer.wordpress.org/plugins/plugin-basics/header-requirements/)
+
+</Notes>
+
+---
+
+### How does it run?
+
+WordPress loads plugins by searching through<br />
+`wp-content/plugins` for files with header comments
+
+<Notes>
+
+Directory containing multiple plugins: `example-plugins/2-wordpress-searches-multiple-files`
+
+</Notes>
+
+---
+
+## Gotchas
+
+---
+
+### Gotchas
+
+(Most are related to PHP)
+
+- PHP’s scoping is… different
+- naming collisions
+
+<Notes>
+
+See [plugin best practices](https://developer.wordpress.org/plugins/plugin-basics/best-practices/)
+
+For us, PHP in general would be a gotcha. It's simply not in our bench strength.
+
+</Notes>
+
+---
+
+### Gotchas
+
+```php
+$test = 42;
+
+function show_test() {
+	echo $test;
+	// Error: Undefined variable '$test'
+}
+```
+
+---
+
+## Hooks
+
+---
+
+### Hooks
+
+Two kinds:
+
+- actions
+- filters
+
+---
+
+### Hooks: Actions & filters
+
+Generally:
+
+- both use callback functions to work
+- actions "interrupt" code flow to do something; filters modify data for later use
+- actions don’t return data; filters do
+- actions have side-effects; filters shouldn't
+
+---
+
+### Hooks: Actions & filters
+
+Let others extend your work:
+
+- [`do_action()`](https://developer.wordpress.org/reference/functions/do_action/)
+- [`apply_filters()`](https://developer.wordpress.org/reference/functions/apply_filters/)
+
+---
+
+### Hooks: Real examples
+
+- [Gravity Forms](https://docs.gravityforms.com/category/developers/hooks/)
+- [Events Calendar/Tickets/etc.](https://docs.theeventscalendar.com/)
+- [Salient Theme](http://themenectar.com/docs/salient/developer-docs/)
+
+---
+
+## Combining What We’ve Learned

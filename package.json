@@ -1,0 +1,17 @@
+{
+  "name": "project-development-risk-lnl",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "GS&F Devs <mindreactor@gsandf.com> (https://gsandf.com/)",
+  "license": "MIT",
+  "devDependencies": {
+    "mdx-deck": "3",
+    "serve": "^11.3.2"
+  },
+  "scripts": {
+    "build": "mdx-deck build presentation.mdx",
+    "dev": "mdx-deck presentation.mdx",
+    "serve": "serve public",
+    "start": "mdx-deck presentation.mdx"
+  }
+}
